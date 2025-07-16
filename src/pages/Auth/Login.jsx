@@ -2,16 +2,23 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { setToken } from "../../utils/auth";
 import API from "../../api";
+import { AuthContext } from "../../context/AuthContext";
+import { useContext } from "react";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
   const autoLoginData = location.state;
+  const { auth } = useContext(AuthContext);
 
   const [email, setEmail] = useState(autoLoginData?.email || "");
   const [password, setPassword] = useState(autoLoginData?.password || "");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (auth) navigate("/dashboard");
+  }, [auth]);
 
   useEffect(() => {
     if (autoLoginData?.email && autoLoginData?.password) {
@@ -20,7 +27,19 @@ export default function Login() {
   }, [autoLoginData]);
 
   const handleSubmit = async (e) => {
-    // implement your login logic here
+    if (e) e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      const res = await API.post("/auth/login", { email, password });
+      setToken(res.data.token);
+      setLoading(false);
+      navigate("/dashboard");
+    } catch (err) {
+      setLoading(false);
+      setError("Login failed: " + (err.response?.data?.message || err.message));
+    }
   };
 
   return (

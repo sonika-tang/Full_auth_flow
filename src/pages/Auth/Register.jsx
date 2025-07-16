@@ -10,9 +10,23 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    // implement your registration logic here
-  };
+const handleSubmit = async (e) => {
+  // implement your registration logic here
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+        await API.post("/auth/register", { name, email, password });
+        setLoading(false);
+        // Redirect to login with auto-filled email/password
+        navigate("/", { state: { email, password } });
+    } catch (err) {
+        setLoading(false);
+        setError("Registration failed: " + (err.response?.data?.message || err.message));
+    }
+};
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100">

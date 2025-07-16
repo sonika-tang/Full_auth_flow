@@ -1,13 +1,15 @@
+import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { isAuthenticated, logout } from "../utils/auth";
+import { logout } from "../utils/auth";
+import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
-  const user = token ? JSON.parse(atob(token.split(".")[1])) : null;
+  const { auth, setAuth } = useContext(AuthContext);
 
   const handleLogout = () => {
     logout();
+    setAuth(null);
     navigate("/");
   };
 
@@ -20,40 +22,26 @@ export default function Navbar() {
         School System
       </div>
 
-      {isAuthenticated() ? (
+      {auth ? (
         <>
-          {/* Navigation links */}
           <div className="flex items-center gap-6">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
+            <button onClick={() => navigate("/dashboard")} className="text-gray-700 hover:text-blue-600 font-medium">
               Dashboard
             </button>
-            <button
-              onClick={() => navigate("/courses")}
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
+            <button onClick={() => navigate("/courses")} className="text-gray-700 hover:text-blue-600 font-medium">
               Courses
             </button>
-            <button
-              onClick={() => navigate("/students")}
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
+            <button onClick={() => navigate("/students")} className="text-gray-700 hover:text-blue-600 font-medium">
               Students
             </button>
-            <button
-              onClick={() => navigate("/teachers")}
-              className="text-gray-700 hover:text-blue-600 font-medium"
-            >
+            <button onClick={() => navigate("/teachers")} className="text-gray-700 hover:text-blue-600 font-medium">
               Teachers
             </button>
           </div>
 
-          {/* User info and logout */}
           <div className="flex items-center gap-4 ml-6">
             <span className="text-sm text-gray-600">
-              Logged in as <strong>{user?.email || "User"}</strong>
+              Logged in as <strong>{auth.email}</strong>
             </span>
             <button
               onClick={handleLogout}

@@ -5,7 +5,9 @@ import { AuthContext } from "../context/AuthContext";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const { auth, setAuth } = useContext(AuthContext);
+  const { auth, setAuth, loading } = useContext(AuthContext);
+
+  if (loading) return null;
 
   const handleLogout = () => {
     logout();
@@ -41,7 +43,7 @@ export default function Navbar() {
 
           <div className="flex items-center gap-4 ml-6">
             <span className="text-sm text-gray-600">
-              Logged in as <strong>{auth.email}</strong>
+              Logged in as <strong>{auth?.email || "User"}</strong>
             </span>
             <button
               onClick={handleLogout}
